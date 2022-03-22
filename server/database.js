@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const DATABASE_URL =
-    'mongodb+srv://harirahul:abcd1234@cluster0.xukm0.mongodb.net/membook?retryWrites=true&w=majority'
+    'mongodb://localhost:27017/membook?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false'
 
 mongoose.connect(DATABASE_URL, {
     useNewUrlParser: true,

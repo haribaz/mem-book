@@ -1,13 +1,17 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Paper, TextField, Button, Typography } from '@material-ui/core'
 import FileBase from 'react-file-base64'
 
-import { createPost } from '../../actions/posts'
+import { createPost, updatePost } from '../../actions/posts'
 
 import useStyles from './styles.js'
-const Form = () => {
+const Form = ({ currentId, setCurrentId }) => {
     const classes = useStyles()
+    const post = useSelector((state) =>
+        currentId ? state.posts.find((post) => post._id === currentId) : null
+    )
+
     const dispatch = useDispatch()
     const [postData, setPostData] = useState({
         title: '',
@@ -17,12 +21,31 @@ const Form = () => {
         selectedFile: ''
     })
 
+    useEffect(() => {
+        if (post) {
+            setPostData(post)
+        }
+    }, [post])
     const submitHandler = (e) => {
         e.preventDefault()
-        dispatch(createPost(postData))
+        if (currentId) {
+            dispatch(updatePost(currentId, postData))
+        } else {
+            dispatch(createPost(postData))
+        }
+        clearHandler()
     }
 
-    const clearHandler = () => {}
+    const clearHandler = () => {
+        setPostData({
+            title: '',
+            content: '',
+            creator: '',
+            tags: [],
+            selectedFile: ''
+        })
+        setCurrentId(null)
+    }
 
     const stateChangeHandler = (property, value) => {
         setPostData((prevData) => {
@@ -40,7 +63,9 @@ const Form = () => {
                 onSubmit={submitHandler}
                 autoComplete="off"
             >
-                <Typography variant="h6">Post your memory</Typography>
+                <Typography variant="h6">
+                    {currentId ? 'Edit your memory' : 'Post your memory'}
+                </Typography>
                 <TextField
                     name="creator"
                     label="Creator"
